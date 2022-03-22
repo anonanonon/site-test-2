@@ -1,0 +1,11 @@
+
+{% block content %}
+    <div class="card-body">
+        <h2 class="text-center font-weight-light my-4">Login</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input class="button" type="submit" value="Login">
+        </form>  
+    </div>
+{% endblock content %}

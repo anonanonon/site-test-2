@@ -1,0 +1,300 @@
+{% load static %}
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width" />
+    <title>ONLYOFFICE Document Editors</title>
+    <link href="{% static "images/favicon.ico" %}" rel="shortcut icon" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
+    <link rel="stylesheet" type="text/css" href="{% static "css/stylesheet.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "css/jquery-ui.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "css/media.css" %}" />
+</head>
+{% block content %}
+{% if user.is_authenticated %}
+<body>
+    <header>
+        
+        <div class="center">
+            <a href="">
+                <img src="{% static "images/logo.svg" %}" alt="ONLYOFFICE" />
+            </a>
+        </div>
+        
+        
+    </header>
+    <div class="center main">
+        <h2 class="text-center font-weight-light my-4">{{request.user|title}}</h2>
+        
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+        <table class="table-main">
+            <tbody>
+                <tr>
+                    <td class="left-panel section">
+                        <div class="help-block">
+                            <span>Create new</span>
+                            <div class="clearFix">
+                                <div class="create-panel clearFix">
+                                    <ul class="try-editor-list clearFix">
+                                        <li>
+                                            <a class="try-editor word reload-page" target="_blank" data-type="word">Document</a>
+                                        </li>
+                                        <li>
+                                            <a class="try-editor cell reload-page" target="_blank" data-type="cell">Spreadsheet</a>
+                                        </li>
+                                        <li>
+                                            <a class="try-editor slide reload-page" target="_blank" data-type="slide">Presentation</a>
+                                        </li>
+                                        <li>
+                                            <a class="try-editor form reload-page" target="_blank" data-type="docxf">Form template</a>
+                                        </li>
+                                    </ul>
+                                    <label class="create-sample">
+                                        <input type="checkbox" id="createSample" class="checkbox" />With sample content
+                                    </label>
+                                </div>
+
+                                <div class="upload-panel clearFix">
+                                    <a class="file-upload">Upload file
+                                        <input type="file" id="fileupload" name="uploadedFile" data-url="upload" />
+                                    </a>
+                                </div>
+
+                                <table class="user-block-table" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td valign="middle">
+                                            <span class="select-user">Username</span>
+                                            <img class="info" src="{% static "images/info.svg" %}" />
+                                            <select class="select-user" id="user">
+                                                    <option value="{{ user.id }}">{{request.user}} </option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="middle">
+                                            <span class="select-user">Language editors interface</span>
+                                            <select class="select-user" id="language">
+                                                {% for key, val in languages.items %}
+                                                    <option value="{{ key }}">{{ val }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="section">
+                        <div class="main-panel">
+                        {% if files %}
+                            <div id="portal-info" style="display: none">
+                        {% else %}
+                            <div id="portal-info" style="display: block">
+                        {% endif %}
+                            <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                            <span class="portal-descr">
+                                    Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
+                                    <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                                </span>
+                            <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                            
+                        </div>
+                            {% if files %}
+                                <div class="stored-list">
+                                    <span class="header-list">Your documents</span>
+                                    <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
+                                                <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
+                                                <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
+                                                <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
+                                                <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <div class="scroll-table-body">
+                                        <table cellspacing="0" cellpadding="0" width="100%">
+                                            <tbody>
+                                                                                                
+                                                {% for userfiles in filenames %}
+
+                                                <tr class="tableRow" title="{{userfiles.namefile}} [{{file.version}}]">
+                                                    <td class="contentCells">
+                                                        
+                                                        <a class="stored-edit {{ userfiles.filetype }}" href="edit?filename={{userfiles.namefile}}" target="_blank">
+                                                            <span>{{userfiles.namefile}}</span>
+                                                        </a>
+                                                    </td>
+                                                    {% if userfiles.canedit %}
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a href="edit?filename={{userfiles.namefile}}&type=desktop&mode=edit" target="_blank">
+                                                                <img src="{% static "images/desktop.svg" %}" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                            </a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a href="edit?filename={{ userfiles.namefile }}&type=mobile&mode=edit" target="_blank">
+                                                                <img src="{% static "images/mobile.svg" %}" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                            </a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a href="edit?filename={{userfiles.namefile}}&type=desktop&mode=comment" target="_blank">
+                                                                <img src="{% static "images/comment.svg" %}" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                            </a>
+                                                        </td>
+                                                        {% if userfiles.filetype == 'word' %}
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="edit?filename={{userfiles.namefile}}&type=desktop&mode=review" target="_blank">
+                                                                    <img src="{% static "images/review.svg" %}" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                </a>
+                                                            </td>
+                                                        {% elif userfiles.filetype == 'cell' %}
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="edit?filename={{userfiles.namefile}}&type=desktop&mode=filter" target="_blank">
+                                                                    <img src="{% static "images/filter.svg" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                </a>
+                                                            </td>
+                                                        {% elif userfiles.filetype == 'docxf' %}
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="edit?filename={{userfiles.namefile}}&type=mobile&mode=fillForms" target="_blank">
+                                                                    <img src="{% static "images/mobile-fill-forms.svg" %}" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
+                                                                </a>
+                                                            </td>
+                                                        {% endif %}
+                                                        {% if userfiles.filetype == 'slide' %}
+                                                            <td class="contentCells contentCells-icon contentCellsEmpty"></td>
+                                                        {% endif %}
+                                                        {% if userfiles.filetype == 'word' %}
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="edit?filename={{userfiles.namefile}}&type=desktop&mode=blockcontent" target="_blank">
+                                                                    <img src="{% static "images/block-content.svg" %}" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                </a>
+                                                            </td>
+                                                        {% else %}
+                                                             <td class="contentCells contentCells-icon"></td>
+                                                        {% endif %}
+                                                        {% if userfiles.filetype == 'slide' %}
+                                                            <td class="contentCells contentCells-icon "></td>
+                                                        {% endif %}
+                                                        
+                                                        {% if userfiles.fillformdoc %}
+                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                <a href="edit?filename={{userfiles.namefile}}&type=desktop&mode=fillForms" target="_blank">
+                                                                    <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                </a>
+                                                            </td>
+                                                            
+                                                        {% else %}
+                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                        {% endif %}
+                                                    
+                                                    {% else %}
+                                                        <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
+                                                    {% endif %}
+                                                    <td class="contentCells contentCells-icon firstContentCellViewers">
+                                                        <a href="edit?filename={{userfiles.namefile}}&type=desktop&mode=view" target="_blank">
+                                                            <img src="{% static "images/desktop.svg" %}" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                        </a>
+                                                    </td>
+                                                    <td class="contentCells contentCells-icon">
+                                                        <a href="edit?filename={{userfiles.namefile}}&type=mobile&mode=view" target="_blank">
+                                                            <img src="{% static "images/mobile.svg" %}" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                        </a>
+                                                    </td>
+                                                    <td class="contentCells contentCells-icon contentCells-shift">
+                                                        <a href="edit?filename={{userfiles.namefile}}&type=embedded&mode=embedded" target="_blank">
+                                                            <img src="{% static "images/embeded.svg" %}" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                                        </a>
+                                                    </td>
+                                                    <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
+                                                        <a href="download?fileName={{userfiles.namefile}}">
+                                                            <img class="icon-download" src="{% static "images/download.svg" %}" alt="Download" title="Download" />
+                                                        </a>
+                                                    </td>
+                                                    <td class="contentCells contentCells-icon contentCells-shift">
+                                                        <a class="delete-file" data-filename="{{userfiles.namefile}}">
+                                                            <img class="icon-delete" src="{% static "images/delete.svg" %}" alt="Delete" title="Delete" />
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        
+
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="mainProgress">
+        <div id="uploadSteps">
+            <span id="uploadFileName" class="uploadFileName"></span>
+            <div class="describeUpload">After these steps are completed, you can work with your document.</div>
+            <span id="step1" class="step">1. Loading the file.</span>
+            <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+            <br />
+            <span id="step2" class="step">2. Conversion.</span>
+            <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
+            <br />
+            <div id="blockPassword">
+                <span class="descrFilePass">The file is password protected.</span>
+                <br />
+                <div>
+                    <input id="filePass" type="password"/>
+                    <div id="enterPass" class="button orange">Enter</div>
+                    <div id="skipPass" class="button gray">Skip</div>
+                </div>
+                <span class="errorPass"></span>
+                <br />
+            </div>
+            <span id="step3" class="step">3. Loading editor scripts.</span>
+            <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
+            <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
+            <br />
+            <br />
+            <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
+            <br />
+            <br />
+            <div class="error-message">
+                <b>Upload error: </b><span></span>
+                <br />
+                Please select another file and try again.
+            </div>
+        </div>
+        <br />
+        <div id="beginEdit" class="button orange disable">Edit</div>
+        <div id="beginView" class="button gray disable">View</div>
+        <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+        <div id="cancelEdit" class="button gray">Cancel</div>
+    </div>
+
+    <span id="loadScripts" data-docs="{{ preloadurl }}"></span>
+
+
+    <script type="text/javascript" src="{% static "js/jquery-1.8.2.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery-ui.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.blockUI.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.iframe-transport.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.fileupload.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jscript.js" %}"></script>
+
+    <script type="text/javascript">
+        var FillExtList = {{ fillExt | safe }};
+        var ConverExtList = {{ convExt | safe }};
+        var EditedExtList = {{ editExt | safe }};
+        var UrlConverter = "convert";
+        var UrlEditor = "edit";
+    </script>
+</body>
+        
+{% endif %}
+
+{% endblock content %}
+
