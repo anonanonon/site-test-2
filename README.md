@@ -21,7 +21,7 @@
 1. Открыть папку в консоли 
 2. pipenv install django 
 3. pipenv shell
-4. Прописать его адрес в config.py "DOC_SERV_SITE_URL"
+4. Прописать адрес OnlyOffice DocServer в config.py "DOC_SERV_SITE_URL"
 5. pip install requests==2.25.0
 6. pip install pyjwt==1.7.1
 7. pip install python-magic
