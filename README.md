@@ -1,5 +1,5 @@
 
-Сервер документов на базе OnlyOffice.
+Сервер документов Python Django на базе OnlyOffice.
 
 Для работы необходимо установить OnlyOffice DocServer и прописать его адрес в config.py.
 
