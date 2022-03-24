@@ -136,7 +136,7 @@ def readFile(path):
 
 # get the url to the previous file version with a given extension
 def getPrevUri(filename, ver, ext, req):
-    print ('  start getPrevUri')
+    #print ('  start getPrevUri')
     host = docManager.getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
    # username = docManager.getUserFolder(req)
@@ -151,7 +151,7 @@ def getZipUri(filename, ver, req):
     host = docManager.getServerUrl(True, req)
     curAdr = req.META['REMOTE_ADDR']
     #return f'{host}{settings.STATIC_URL}/{filename}-hist/{ver}/diff.zip'
-    print ('{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/diff.zip')
+    #print ('{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/diff.zip')
     return f'{host}{settings.STATIC_URL}{curAdr}/{filename}-hist/{ver}/diff.zip'
 
 # get the meta data of the file
@@ -167,24 +167,24 @@ def getMeta(storagePath):
 
 # get the document history of a given file
 def getHistoryObject(storagePath, filename, docKey, docUrl, req):
-    print (' start getHistoryObject')
+    #print (' start getHistoryObject')
     histDir = getHistoryDir(storagePath)
-    print (' getHistoryObject 1')
+    #print (' getHistoryObject 1')
     version = getFileVersion(histDir)
-    print (' getHistoryObject 2')
+    #print (' getHistoryObject 2')
     if version > 0: # if the file was modified (the file version is greater than 0)
         hist = []
         histData = {}
-        print (' getHistoryObject 3')
+        #print (' getHistoryObject 3')
         for i in range(1, version + 1): # run through all the file versions
             obj = {}
             dataObj = {}
-            print (' getHistoryObject 4')
+            #print (' getHistoryObject 4')
             prevVerDir = getVersionDir(histDir, i - 1) # get the path to the previous file version
             verDir = getVersionDir(histDir, i) # get the path to the given file version
 
             try:
-                print (' getHistoryObject 5')
+                #print (' getHistoryObject 5')
                 key = docKey if i == version else readFile(getKeyPath(verDir)) # get document key
 
                 obj['key'] = key
@@ -193,7 +193,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                 dataObj['version'] = i
 
                 if i == 1: # check if the version number is equal to 1
-                    print (' getHistoryObject 6')
+                    #print (' getHistoryObject 6')
                     meta = getMeta(storagePath) # get meta data of this file
                     if meta: # write meta information to the object (user information and creation date)
                         obj['created'] = meta['created']
@@ -201,11 +201,11 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
                             'id': meta['uid'],
                             'name': meta['uname']
                         }
-                print (' getHistoryObject 7')    
+                #print (' getHistoryObject 7')    
                 dataObj['url'] = docUrl if i == version else getPrevUri(filename, i, fileUtils.getFileExt(filename), req) # write file url to the data object
-                print (' getHistoryObject 7.5')
+                #print (' getHistoryObject 7.5')
                 if i > 1: # check if the version number is greater than 1 (the file was modified)
-                    print (' getHistoryObject 8')
+                    #print (' getHistoryObject 8')
                     changes = json.loads(readFile(getChangesHistoryPath(prevVerDir))) # get the path to the changes.json file 
                     change = changes['changes'][0]
                     
@@ -224,21 +224,21 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, req):
 
                 if jwtManager.isEnabled():
                     dataObj['token'] = jwtManager.encode(dataObj) 
-                print (' getHistoryObject 8.5')
+                #print (' getHistoryObject 8.5')
                 hist.append(obj) # add object dictionary to the hist list
                 histData[str(i - 1)] = dataObj # write data object information to the history data
-                print (' getHistoryObject 8.7')
+                #print (' getHistoryObject 8.7')
             except Exception:
-                print (' Exception getHistoryObject 9')
+                #print (' Exception getHistoryObject 9')
                 return {}
-        print (' getHistoryObject 10')    
+        #print (' getHistoryObject 10')    
         histObj = { # write history information about the current file version to the history object
             'currentVersion': version,
             'history': hist
         }
-        print (' getHistoryObject 11')
+        #print (' getHistoryObject 11')
         return { 'history': histObj, 'historyData': histData }
-    print('  end getHistoryObject')
+    #print('  end getHistoryObject')
     return {}
 
 

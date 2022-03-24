@@ -207,46 +207,46 @@ def getDownloadUrl(filename, req):
 
 # get root folder for the current file
 def getRootFolder(req):
-    print ('start  getRootFolder')
+    #print ('start  getRootFolder')
     if isinstance(req, str):
         curAdr = req
-        print (curAdr + ' curAdr1 getRootFolder')
+        #print (curAdr + ' curAdr1 getRootFolder')
     else:
         curAdr = req.META['REMOTE_ADDR']
-        print (curAdr + ' curAdr2 getRootFolder')
+        #print (curAdr + ' curAdr2 getRootFolder')
     
    # username = req.user.username
     #username = 'dimar'
-    #print (username + '  username getRootFolder')
+    ##print (username + '  username getRootFolder')
     
    # directory = os.path.join(config.STORAGE_PATH, curAdr, username)
-    #print(directory + '  directory getRootFolder')
+    ##print(directory + '  directory getRootFolder')
     #directory = os.path.join(config.STORAGE_PATH, username)
     directory = os.path.join(config.STORAGE_PATH, curAdr)
     if not os.path.exists(directory): # if such a directory does not exist, make it
         os.makedirs(directory)
-    print (directory+ '   getRootFolder')
+    #print (directory+ '   getRootFolder')
     return directory
 
 # get the file path
 def getStoragePath(filename, req):
-    print ('getStoragePath   Start')
+    #print ('getStoragePath   Start')
     directory = getRootFolder(req)
-    print (directory+ '  directory  getStoragePath')
-    print (os.path.join(directory, fileUtils.getFileName(filename)))
+    #print (directory+ '  directory  getStoragePath')
+    #print (os.path.join(directory, fileUtils.getFileName(filename)))
     return os.path.join(directory, fileUtils.getFileName(filename))
 
 # get the path to the forcesaved file version
 
 def getForcesavePath(filename, req, create ):
-    print ('Start getForcesavePat')
+    #print ('Start getForcesavePat')
     
     if isinstance(req, str):
         curAdr = req
-        print (curAdr+' curAdr 1 getForcesavePath')
+        #print (curAdr+' curAdr 1 getForcesavePath')
     else:
         curAdr = req.META['REMOTE_ADDR']
-        print (curAdr+' curAdr 2 getForcesavePath')
+        #print (curAdr+' curAdr 2 getForcesavePath')
     #username = 'dimar'
     #if username==NULL:
      #   username=req.user.username
@@ -257,25 +257,25 @@ def getForcesavePath(filename, req, create ):
     #directory = os.path.join(config.STORAGE_PATH, username)
     #print (directory+ '  diectory 1 getForcesavePath')
     if not os.path.exists(directory): # the directory with host address doesn't exist
-        print ('  diectory 2 getForcesavePath')
+        #print ('  diectory 2 getForcesavePath')
         return ""
  
     directory = os.path.join(directory, f'{filename}-hist') # get the path to the history of the given file
-    print (directory+'  diectory 3 getForcesavePath')
+    #print (directory+'  diectory 3 getForcesavePath')
     if (not os.path.exists(directory)):
         if create: # if the history directory doesn't exist
-            print ('  diectory 4 getForcesavePath')
+            #print ('  diectory 4 getForcesavePath')
             os.makedirs(directory) # create history directory if it doesn't exist
         else: # the history directory doesn't exist and we are not supposed to create it
-            print ('  diectory 5 getForcesavePath')
+            #print ('  diectory 5 getForcesavePath')
             return ""
-    print ('  start diectory 6 getForcesavePath')
+    #print ('  start diectory 6 getForcesavePath')
     directory = os.path.join(directory, filename) # and get the path to the given file
-    print (directory+ '  diectory 6 getForcesavePath')
+    #print (directory+ '  diectory 6 getForcesavePath')
     if (not os.path.exists(directory) and not create):
-        print ('  diectory 7 getForcesavePath')
+        #print ('  diectory 7 getForcesavePath')
         return ""
-    print (directory+ '  diectory 8 getForcesavePath')
+    #print (directory+ '  diectory 8 getForcesavePath')
     return directory
 
 # get information about all the stored files
@@ -386,7 +386,7 @@ def getFilesInfo(req):
     if fileId :
         if len(resultID) > 0 : return resultID
         else : 
-            print ('File not found')
+            #print ('File not found')
             return "File not found"     
     else :
         return result
@@ -395,13 +395,13 @@ def getFilesInfo(req):
 
 # download the file
 def download(filePath):
-    print (filePath +'    docManager dowloand start 1')
+    #print (filePath +'    docManager dowloand start 1')
     response = FileResponse(open(filePath, 'rb'), True) # write headers to the response object
-    print (' docManager dowloand start 2')
+    #print (' docManager dowloand start 2')
     response['Content-Length'] =  os.path.getsize(filePath)
-    print (' docManager dowloand start 3')
+    #print (' docManager dowloand start 3')
     response['Content-Disposition'] = "attachment;filename*=UTF-8\'\'" + urllib.parse.unquote(os.path.basename(filePath))
-    print (' docManager dowloand start 4')
+    #print (' docManager dowloand start 4')
     response['Content-Type'] = magic.from_file(filePath, mime=True)
-    print (' docManager dowloand start 5')
+    #print (' docManager dowloand start 5')
     return response

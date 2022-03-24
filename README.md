@@ -24,5 +24,5 @@
 4. Прописать адрес OnlyOffice DocServer в config.py DOC_SERV_SITE_URL = 'http://сюда вписать URL сервера/'
 5. pip install requests==2.25.0
 6. pip install pyjwt==1.7.1
-7. pip install python-magic
+7. pip install python-magic-bin==0.4.14
 8. python manage.py runserver 0.0.0.0:8000

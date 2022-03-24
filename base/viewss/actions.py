@@ -173,18 +173,18 @@ def saveAs(request):
 # edit a file
 #@login_required
 def edit(request):
-    print('  start edit actions')
+    #print('  start edit actions')
     filename = fileUtils.getFileName(request.GET['filename'])
-    print(filename+'  filename edit')
+    #print(filename+'  filename edit')
     ext = fileUtils.getFileExt(filename)
 
     fileUri = docManager.getFileUri(filename, True, request)
-    print(fileUri+'   fileUri')
+    #print(fileUri+'   fileUri')
     fileUriUser = docManager.getFileUri(filename, False, request)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
-    print (str(user) + ' user get edit action')
+    #print (str(user) + ' user get edit action')
     edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'  # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
     canEdit = docManager.isCanEdit(ext)  # check if the file with this extension can be edited
 
@@ -198,7 +198,7 @@ def edit(request):
     lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'  # get the editor language (the default language is English)
 
     storagePath = docManager.getStoragePath(filename, request)
-    print(storagePath+' storagePath edit action')
+    #print(storagePath+' storagePath edit action')
     meta = historyManager.getMeta(storagePath)  # get the document meta data
     infObj = None
 
@@ -207,7 +207,7 @@ def edit(request):
 
     templatesImageUrl = docManager.getTemplateImageUrl(fileType, request) # templates image url in the "From Template" section
     createUrl = docManager.getCreateUrl(edType, request)
-    print(createUrl+'  createUrl edit action')
+    #print(createUrl+'  createUrl edit action')
     templates = [
         {
             'image': '',
@@ -328,23 +328,23 @@ def edit(request):
         'dataMailMergeRecipients': json.dumps(dataMailMergeRecipients),  # recipient data for mail merging
         'usersForMentions': json.dumps(usersForMentions) if user.id !='uid-0' else None
     }
-    print('   end edit')
-    print(str(request)+ str(context)+'  render')
+    #print('   end edit')
+    #print(str(request)+ str(context)+'  render')
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
 
 # track the document changes
 
 ##@login_required
 def track(request):
-    print ('  start Track')
+    #print ('  start Track')
     response = {}
 
     try:
-        print ( ' start trackManager actions')
+        #print ( ' start trackManager actions')
         body = trackManager.readBody(request)  # read request body
-        print ( ' end trackManager actions')
+        #print ( ' end trackManager actions')
         status = body['status']  # and get status from it
-        print (str(status)+'  status body track')
+        #print (str(status)+'  status body track')
         if (status == 1): # editing
             if (body['actions'] and body['actions'][0]['type'] == 0):  # finished edit
                 user = body['actions'][0]['userid']  # the user who finished editing
@@ -354,28 +354,28 @@ def track(request):
         filename = fileUtils.getFileName(request.GET['filename'])
         #usAddr = '192.168.1.5'
         #usAddr = request.META['REMOTE_ADDR']
-        print (filename+'   filename trackManager actions')
+        #print (filename+'   filename trackManager actions')
         usAddr = request.GET['userAddress']
-        print (usAddr+'  track action')
+        #print (usAddr+'  track action')
 
         if (status == 2) | (status == 3):  # mustsave, corrupted
-            print ( '  Status 2 3')
+            #print ( '  Status 2 3')
             trackManager.processSave(body, filename, usAddr)
         if (status == 6) | (status == 7):  # mustforcesave, corruptedforcesave
-            print ('  Status 6 7')
+            #print ('  Status 6 7')
             trackManager.processForceSave(body, filename, usAddr)
-        print ('  try track comleate action')
+        #print ('  try track comleate action')
 
     except Exception as e:
-        print('   Exception')
+        #print('   Exception')
         response.setdefault('error', 1)  # set the default error value as 1 (document key is missing or no document with such key could be found)
         response.setdefault('message', e.args[0])
 
     response.setdefault('error', 0)  # if no exceptions are raised, the default error value is 0 (no errors)
     # the response status is 200 if the changes are saved successfully; otherwise, it is equal to 500
     
-    #print (' End track')
-    print (str(response)+ ' End track')
+    ##print (' End track')
+    #print (str(response)+ ' End track')
     return HttpResponse(json.dumps(response), content_type='application/json', status=200 if response['error'] == 0 else 500)
 
 # remove a file
@@ -412,19 +412,26 @@ def csv(request):
     filePath = os.path.join('assets', 'sample', "csv.csv")
     response = docManager.download(filePath)
     return response
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    ip = x_forwarded_for.split(',')[-1].strip()
     
+    return ip
+
 #@login_required
 # download a file
 def download(request):
-    print (' Start download')
+    #print (' Start download')
     
     try:   
         fileName = fileUtils.getFileName(request.GET['fileName'])  # get the file name
-        print(fileName+'  actions download 1')
+        #print(fileName+'  actions download 1')
         #userAddress = '192.168.1.5'
         userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
-        print(str(userAddress)+'  actions download 2')
-        
+        #print(str(userAddress)+'  actions download 2')
+        #ipadress=get_client_ip(request)
+        #print (ipadress)
         if (jwtManager.isEnabled()):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
@@ -435,23 +442,23 @@ def download(request):
                 except Exception:    
                     return HttpResponse('JWT validation failed', status=403)
         #username=request.user.username
-        #print(username+' username dowloand action')
+        ##print(username+' username dowloand action')
         
         filePath = docManager.getForcesavePath(fileName, userAddress, False) # get the path to the forcesaved file version
-        print (filePath+'  filePath 1')  
+        #print (filePath+'  filePath 1')  
         if (filePath == ""):
-            print (' start filePath 2')
+            #print (' start filePath 2')
             filePath = docManager.getStoragePath(fileName, userAddress)  # get file from the storage directory
-            print (filePath+'  filePath 2')
-        print (' start response filePath 3')
+            #print (filePath+'  filePath 2')
+        #print (' start response filePath 3')
         
         response = docManager.download(filePath)  # download this file
-        print (' filePath 3')
+        #print (' filePath 3')
         
         return response
     except Exception:
         response = {}
-        print ('error', 'File not found')
+        #print ('error', 'File not found')
         response.setdefault('error', 'File not found')
         return HttpResponse(json.dumps(response), content_type='application/json')
 

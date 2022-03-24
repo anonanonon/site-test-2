@@ -33,11 +33,11 @@ from . import jwtManager, docManager, historyManager, fileUtils, serviceConverte
 
 # read request body
 def readBody(request):
-    print ('  Start readBody')
+    #print ('  Start readBody')
     body = json.loads(request.body)
     if (jwtManager.isEnabled()): # if the secret key to generate token exists
         token = body.get('token') # get the document token
-        print (token+'  token readBody')
+        #print (token+'  token readBody')
         if (not token): # if JSON web token is not received
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader) # get it from the Authorization header
@@ -50,12 +50,12 @@ def readBody(request):
         body = jwtManager.decode(token)
         if (body.get('payload')): # get the payload object from the request body
             body = body['payload']
-    print (' end readBody')
+    #print (' end readBody')
     return body
 
 # file saving process
 def processSave(body, filename, usAddr):
-    print (' start processSave')
+    #print (' start processSave')
     download = body.get('url')
     if (download is None):
         raise Exception("DownloadUrl is null")
@@ -105,7 +105,7 @@ def processSave(body, filename, usAddr):
 
 # file force saving process
 def processForceSave(body, filename, usAddr):
-    print (' start processForceSave')
+    #print (' start processForceSave')
     download = body.get('url')
     if (download is None):
         raise Exception("DownloadUrl is null")
@@ -149,7 +149,7 @@ def processForceSave(body, filename, usAddr):
 # create a command request
 def commandRequest(method, key):
     
-    print (' start commandRequest')
+    #print (' start commandRequest')
     documentCommandUrl = config.DOC_SERV_SITE_URL + config.DOC_SERV_COMMAND_URL
 
     payload = {
