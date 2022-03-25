@@ -415,8 +415,10 @@ def csv(request):
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    ip = x_forwarded_for.split(',')[-1].strip()
-    
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[-1].strip()
+    else:
+        ip = request.META.get('REMOTE_ADDR')
     return ip
 
 #@login_required
@@ -430,8 +432,8 @@ def download(request):
         #userAddress = '192.168.1.5'
         userAddress = request.GET.get('userAddress') if request.GET.get('userAddress') else request
         #print(str(userAddress)+'  actions download 2')
-        #ipadress=get_client_ip(request)
-        #print (ipadress)
+        ipadress=request.GET
+        print (ipadress)
         if (jwtManager.isEnabled()):
             jwtHeader = 'Authorization' if config.DOC_SERV_JWT_HEADER is None or config.DOC_SERV_JWT_HEADER == '' else config.DOC_SERV_JWT_HEADER
             token = request.headers.get(jwtHeader)
